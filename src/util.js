@@ -5,7 +5,7 @@ import * as brain from "brain.js";
 let max = 0;
 let min = 1000000;
 
-const parseData = async (file) => {
+const parseData = async (file, setLog) => {
   let data = [];
   if (file) {
     Papa.parse(file, {
@@ -23,24 +23,27 @@ const parseData = async (file) => {
           rawTrainingData.push(scaleDown(item));
         });
         let temp = chunk(rawTrainingData, 5);
-        let trainingData = temp.slice(0, 11);
-        console.log(rawTrainingData, max, min);
+        let trainingData = temp.slice(0, 20);
         const net = new brain.recurrent.LSTMTimeStep({
           inputSize: 4,
           hiddenLayers: [8, 8],
           outputSize: 4,
         });
         net.train(trainingData, {
-          learningRate: 0.05,
-          errorThresh: 0.02,
-          log: true,
+          iterations: 1000,
+          learningRate: 0.03,
+          errorThresh: 0.01,
+          log: (status) => {
+            console.log(status);
+            const ul = document.getElementById("logs");
+            let li = document.createElement("li");
+            li.appendChild(document.createTextNode(status));
+            ul.appendChild(li);
+          },
         });
-        let forecastData = temp[11];
-        let originalData = temp[12][0];
-        console.log(
-          scaleUp(net.forecast(forecastData, 1)[0]),
-          scaleUp(originalData)
-        );
+        let forecastData = temp[21];
+        let originalData = temp[22][0];
+        console.log(scaleUp(net.run(forecastData)), scaleUp(originalData));
       },
     });
   }

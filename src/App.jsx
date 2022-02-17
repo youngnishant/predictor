@@ -12,6 +12,16 @@ export default function App() {
         />
       </div>
       <button onClick={() => parseData(file)}>Check</button>
+      <div
+        style={{
+          height: "500px",
+          width: "100%",
+          overflow: "scroll",
+          marginTop: "50px",
+        }}
+      >
+        <ul id="logs"></ul>
+      </div>
     </>
   );
 }
